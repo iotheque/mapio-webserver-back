@@ -114,8 +114,10 @@ def create_app() -> Flask:
                 # Start wlan0 service
                 os.popen("systemctl daemon-reload").read()  # noqa
                 os.popen("systemctl stop wpa_supplicant-ap.service").read()  # noqa
-                os.popen("systemctl restart wpa_supplicant@wlan0.service").read()  # noqa
+                os.popen("systemctl enable --now wpa_supplicant.service").read()  # noqa
+                time.sleep(5)  # Wait before enabling wlan0 service
                 os.popen("systemctl enable wpa_supplicant@wlan0.service").read()  # noqa
+                os.popen("systemctl restart wpa_supplicant@wlan0.service").read()  # noqa
 
         return Response(response="wifi", status=200)
 
