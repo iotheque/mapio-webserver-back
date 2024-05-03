@@ -5,6 +5,8 @@
 import json
 import logging
 import os
+import subprocess
+import time
 from enum import Enum
 from pathlib import Path
 from typing import Any, Union
@@ -112,8 +114,10 @@ def create_app() -> Flask:
                 # Start wlan0 service
                 os.popen("systemctl daemon-reload").read()  # noqa
                 os.popen("systemctl stop wpa_supplicant-ap.service").read()  # noqa
-                os.popen("systemctl restart wpa_supplicant@wlan0.service").read()  # noqa
+                os.popen("systemctl enable --now wpa_supplicant.service").read()  # noqa
+                time.sleep(5)  # Wait before enabling wlan0 service
                 os.popen("systemctl enable wpa_supplicant@wlan0.service").read()  # noqa
+                os.popen("systemctl restart wpa_supplicant@wlan0.service").read()  # noqa
 
         return Response(response="wifi", status=200)
 
@@ -260,5 +264,32 @@ def create_app() -> Flask:
                 return Response(response="ssh-setkey", status=200)
 
         return Response(response="ssh-setkey", status=404)
+
+    def stream_logs():
+        process: Any = subprocess.Popen(
+            [  # noqa
+                "docker-compose",
+                "-f",
+                "/home/root/mapio/docker-compose.yml",
+                "logs",
+                "--tail=1000",
+                "-f",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
+        while True:
+            output = process.stdout.readline()
+            if output == "" and process.poll() is not None:
+                break
+            if output:
+                yield "data: " + output.rstrip() + "\n\n"
+                time.sleep(0.01)
+
+    @app.route("/logs", methods=["GET"])
+    def logs():
+        logger.info("logs")
+        return Response(stream_logs(), mimetype="text/event-stream")
 
     return app
