@@ -5,7 +5,6 @@
 import json
 import logging
 import os
-import subprocess
 import time
 from enum import Enum
 from pathlib import Path
@@ -265,31 +264,19 @@ def create_app() -> Flask:
 
         return Response(response="ssh-setkey", status=404)
 
-    def stream_logs():
-        process: Any = subprocess.Popen(
-            [  # noqa
-                "docker-compose",
-                "-f",
-                "/home/root/mapio/docker-compose.yml",
-                "logs",
-                "--tail=1000",
-                "-f",
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
-        )
-        while True:
-            output = process.stdout.readline()
-            if output == "" and process.poll() is not None:
-                break
-            if output:
-                yield "data: " + output.rstrip() + "\n\n"
-                time.sleep(0.01)
-
     @app.route("/logs", methods=["GET"])
     def logs():
-        logger.info("logs")
-        return Response(stream_logs(), mimetype="text/event-stream")
+        logger.info("getLogs")
+        output = os.popen(
+            'docker-compose -f /home/root/mapio/docker-compose.yml logs --tail="20"'  # noqa
+        ).read()
+        logs: list[dict[str, str]] = []
+        for line in output.splitlines():
+            line = line.rstrip("\n")
+            log = {"data": line}
+            logs.append(log)
+
+        logger.info(f"logs : {logs}")
+        return json.dumps(logs)
 
     return app
