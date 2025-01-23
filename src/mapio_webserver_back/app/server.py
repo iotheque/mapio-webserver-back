@@ -237,9 +237,8 @@ def create_app() -> Flask:
             global update_status
             update_status = UpdateStatus.updating
             if f != "":
-                f.save("/tmp/bundle.raucb")  # noqa
-                os.popen("rauc install /tmp/bundle.raucb").read()  # noqa
-                os.popen("rm /boot/first_boot_done").read()  # noqa
+                f.save("/var/volatile/bundle.raucb")
+                os.popen("rauc install /var/volatile/bundle.raucb").read()  # noqa
                 os.popen("reboot").read()  # noqa
 
         return Response(response="update", status=200)
