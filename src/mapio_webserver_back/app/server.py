@@ -169,16 +169,16 @@ def create_app() -> Flask:
                     if item.get("selected"):
                         if action == "restart":
                             os.popen(
-                                f"docker-compose -f /home/root/mapio/docker-compose.yml restart {service.lower()}"  # noqa
+                                f"docker compose -f /home/root/mapio/docker-compose.yml restart {service.lower()}"  # noqa
                             ).read()
                         elif action == "stop":
                             os.popen(
-                                f"docker-compose -f /home/root/mapio/docker-compose.yml stop {service.lower()}"  # noqa
+                                f"docker compose -f /home/root/mapio/docker-compose.yml stop {service.lower()}"  # noqa
                             ).read()
                         elif action == "update":
                             os.popen(
-                                f"docker-compose -f /home/root/mapio/docker-compose.yml \
- pull {service.lower()} && docker-compose -f /home/root/mapio/docker-compose.yml up -d --force-recreate {service.lower()}"  # noqa
+                                f"docker compose -f /home/root/mapio/docker-compose.yml \
+ pull {service.lower()} && docker compose -f /home/root/mapio/docker-compose.yml up -d --force-recreate {service.lower()}"  # noqa
                             ).read()
                         else:
                             logger.error("Unknown action")
@@ -268,7 +268,7 @@ def create_app() -> Flask:
     def logs():
         logger.info("getLogs")
         output = os.popen(
-            'docker-compose -f /home/root/mapio/docker-compose.yml logs --tail="20"'  # noqa
+            'docker compose -f /home/root/mapio/docker-compose.yml logs --tail="20"'  # noqa
         ).read()
         logs: list[dict[str, str]] = []
         for line in output.splitlines():
