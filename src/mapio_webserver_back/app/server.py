@@ -41,7 +41,7 @@ def create_app() -> Flask:
     @app.context_processor
     def set_static_data() -> dict[str, str]:
         os_version = os.popen(
-            "cat /etc/os-release | grep PRETTY_NAME | awk -F'\"' '{print $2}'"  # noqa
+            "cat /etc/os-release | grep MAPIO_OS_VERSION_PRETTY | awk -F'=' '{print $2}'"  # noqa
         ).read()
 
         return {
@@ -65,7 +65,7 @@ def create_app() -> Flask:
             str: The homepage page to select different actions
         """
         os_version = os.popen(
-            "cat /etc/os-release | grep PRETTY_NAME | awk -F'\"' '{print $2}'"  # noqa
+            "cat /etc/os-release | grep MAPIO_OS_VERSION_PRETTY | awk -F'=' '{print $2}'"  # noqa
         ).read()
 
         return {
