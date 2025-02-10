@@ -131,7 +131,7 @@ def create_app() -> Flask:
         logger.info("getScan")
         os.popen("ifconfig wlan0 up").read()  # noqa
         output = os.popen(
-            "iw wlan0 scan | grep SSID: | awk '{print $2}' | sed '/^$/d'"  # noqa
+            "iw wlan0 scan | grep SSID: | awk '{print $2}' | sed '/^$/d' | sort -u"  # noqa
         ).read()
         ssids: list[dict[str, str]] = []
         for line in output.splitlines():
