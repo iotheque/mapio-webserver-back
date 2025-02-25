@@ -238,6 +238,30 @@ def create_app() -> Flask:
 
         return Response(response="docker-custom", status=404)
 
+    @app.route("/docker-update", methods=["GET"])
+    def docker_update() -> Union[str, Response]:
+        """Get Docker last version.
+
+        Returns:
+            Response
+        """
+        if request.method == "GET":
+            containers: list[dict[str, str]] = []
+
+            output = os.popen("/home/root/tools/docker_check_versions.sh").read()  # noqa
+            for line in output.splitlines():
+                line = line.rstrip("\n")
+                container = {
+                    "name": line.split(" ")[0],
+                    "update": line.split(" ")[1],
+                }
+                containers.append(container)
+
+            logger.debug(f"containers {containers}")
+            return json.dumps(containers)
+
+        return Response(response="docker-custom", status=404)
+
     @app.route("/update", methods=["POST", "GET"])
     def update() -> Response:
         """Update endpoint.
