@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Union
 
 import yaml
-from flask import Flask, Response, request
+from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 
 YAML_FILE = "/home/root/mapio/docker-compose.yml"
@@ -135,7 +135,7 @@ def create_app() -> Flask:
         logger.info("getScan")
         os.popen("ifconfig wlan0 up").read()  # noqa
         output = os.popen(
-            "iw wlan0 scan | grep SSID: | awk '{print $2}' | sed '/^$/d' | sort -u"  # noqa
+            "iw wlan0 scan | grep SSID: | awk -F ': ' '{print $2}' | sed '/^$/d' | sort -u"  # noqa
         ).read()
         ssids: list[dict[str, str]] = []
         for line in output.splitlines():
@@ -146,6 +146,20 @@ def create_app() -> Flask:
 
         logger.info(f"SSIDs : {ssids}")
         return json.dumps(ssids)
+
+    @app.route("/load-yaml", methods=["GET"])
+    def load_yaml():
+        with Path.open(Path("/home/root/mapio/docker-compose.yml"), "r") as f:
+            content = f.read()
+        return jsonify({"content": content})
+
+    @app.route("/save-yaml", methods=["POST"])
+    def save_yaml():
+        data: Any = request.json
+        content = data.get("content")
+        with Path.open(Path("/home/root/mapio/docker-compose.yml"), "w") as f:
+            f.write(content)
+        return {"status": "ok"}
 
     @app.route("/compose", methods=["POST", "GET"])
     def compose() -> Union[str, Response]:
