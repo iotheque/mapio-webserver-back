@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools>=69", "setuptools_scm[toml]>=8.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
 name = "mapio_webserver_back"
@@ -39,7 +39,8 @@ Issues = "https://github.com/pcurt/mapio_webserver_back/issues"
 [project.scripts]
 mapio_webserver_back = "mapio_webserver_back.cli:main"
 
-[tool.setuptools_scm]
+[tool.pdm.version]
+source = "scm"
 fallback_version = "0.0.1"
 
 [tool.pyright]
@@ -66,7 +67,6 @@ parallel = true
 source = ["src/", ".tox/**/site-packages"]
 
 [tool.ruff]
-extend-exclude = ["setup.py"]
 line-length = 100
 
 [tool.ruff.lint]
@@ -199,7 +199,7 @@ _dev_packages_update = { cmd = [
     # Only touch the dev packages
     "--dev",
 ], help = "Update the dev packages to their latest version" }
-_generate_version = { shell = "echo PACKAGE_VERSION=$(python -m setuptools_scm) | sed 's/+/./' > .version.env", help = "Export the package's version number to .version.env" }
+_generate_version = { shell = "echo PACKAGE_VERSION=$(pdm show --version) | sed 's/+/./' > .version.env", help = "Export the package's version number to .version.env" }
 _generate_requirements = { cmd = [
     "pdm",
     "export",
@@ -219,14 +219,7 @@ _generate_requirements_no_hashes = { cmd = [
     "--output",
     "requirements.txt",
 ], help = "Generate a requirements file for the runtime dependencies" }
-_build_pex = { cmd = [
-    "python",
-    "setup.py",
-    "bdist_pex",
-    "--bdist-all",
-    "--pex-args",
-    "--requirement=requirements.txt",
-], help = "Build a PEX file of the package" }
+_build_pex = { shell = "pex dist/mapio_webserver_back-*.whl -r requirements.txt -c mapio_webserver_back -o dist/mapio_webserver_back.pex", help = "Build a PEX file of the package" }
 _build_docker_image = { shell = "docker build -t mapio_webserver_back:dev -t mapio_webserver_back:${PACKAGE_VERSION} ." }
 _build_wheel = { cmd = [
     "pdm",
@@ -287,29 +280,17 @@ docker-build = { composite = [
 ], help = "Build a Docker image of the application" }
 pex-build = { composite = [
     "_generate_requirements_no_hashes",
+    "_build_wheel",
     "_build_pex",
 ], help = "Build a (reproducible) PEX executable of each entrypoint of the application" }
 cross-test = { cmd = [
     "tox",
     "run-parallel",
 ], help = "Run the test suite against multiple Python versions" }
-template-update = { cmd = [
-    "copier",
-    "update",
-    '--conflict',
-    "inline",
-], help = "Update the project to the latest version of the template" }
-template-check = { cmd = [
-    "copier",
-    "update",
-    "--pretend",
-    "--defaults",
-], help = "Check if the project uses the latest version of the template" }
 
 [tool.pdm.dev-dependencies]
 dev = [
     "black==24.2.0",
-    "copier==9.1.1",
     "coverage==7.4.3",
     "isort==5.13.2",
     "pex==2.2.1",
@@ -319,7 +300,6 @@ dev = [
     "pytest==8.0.2",
     "rope==1.12.0",
     "ruff==0.2.2",
-    "setuptools-scm==8.0.4",
     "toml==0.10.2",
     "tox-pdm==0.7.2",
     "tox==4.13.0",

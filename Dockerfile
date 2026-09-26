@@ -1,14 +1,15 @@
 ARG PYTHON_VERSION=3.12.2
-ARG PDM_VERSION=2.11.2
+ARG PDM_VERSION=2.29.2
 
 FROM python:${PYTHON_VERSION}-slim as base
-RUN addgroup --system abc && \
+RUN addgroup --system --gid 1000 abc && \
     adduser \
+    --uid 1000 \
     --shell /bin/sh \
     --ingroup abc \
     --disabled-password \
     abc
-USER abc
+USER 1000:1000
 ENV PATH="/home/abc/.local/bin:${PATH}"
 WORKDIR /app
 

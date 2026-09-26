@@ -1,7 +1,7 @@
 # Quickstart
 
 This file provides a quick documentation of the most useful features of this
-template.
+project.
 
 - [How do I...?](#how-do-i)
   - [...setup my development environment?](#setup-my-development-environment)
@@ -20,7 +20,6 @@ template.
   - [...build a Docker image that runs my package?](#build-a-docker-image-that-runs-my-package)
   - [...publish my package to a Pip repository?](#publish-my-package-to-a-pip-repository)
   - [...clean my local project directory?](#clean-my-local-project-directory)
-  - [...update the project to the latest version of the template?](#update-the-project-to-the-latest-version-of-the-template)
 
 ## How do I...?
 
@@ -135,7 +134,7 @@ mode with `pdm`, and not in production.
 `git tag X.Y.Z`
 
 Apply a new `git` tag to the commit you want to define as a new version. When
-building the package from the repository, `setuptools_scm` will use this tag as
+building the package from the repository, `pdm-backend` will use this tag as
 the version number of the package.
 
 Make sure to follow the [Semantic Versioning](https://semver.org/) rule, to
@@ -184,19 +183,3 @@ publish`](https://pdm.fming.dev/latest/usage/publish/)
 
 This will use `pyclean` to find and delete the binary python files, the various
 cache directories, and the `dist/` directory.
-
-### ...update the project to the latest version of the template?
-
-`pdm template-check`
-
-and
-
-`pdm template-update`
-
-These commands will respectively check if your project is using the latest
-version of the template, and update your project to the latest release of the
-template.
-
-Any conflict created by the update of the template will be written in the
-related files, with the usual merge conflict syntax. Make sure to review and
-resolve them before committing the updates to the repository.
