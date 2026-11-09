@@ -11,6 +11,7 @@ from typing import Optional
 import click
 from waitress import serve
 
+from mapio_webserver_back.app import config
 from mapio_webserver_back.app.server import create_app
 
 
@@ -54,7 +55,14 @@ def app() -> None:
     logger.info("Start server")
 
     app = create_app()
-    serve(app, port=8456, host="0.0.0.0")  # noqa
+    # Each open log stream holds a thread, and bundles can exceed the 1 GiB default
+    serve(
+        app,
+        port=8456,
+        host="0.0.0.0",  # noqa: S104
+        threads=8,
+        max_request_body_size=config.MAX_UPLOAD_BYTES,
+    )
 
     logger.info("Server is stopped")
 

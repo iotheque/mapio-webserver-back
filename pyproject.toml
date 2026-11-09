@@ -21,11 +21,12 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
 ]
 dependencies = [
-    "Click==8.1.7",
-    "flask==2.1.1",
-    "flask-cors==3.0.10",
-    "waitress==2.1.1",
-    "werkzeug==2.1.1",
+    "Click>=8.1.7,<9",
+    "flask>=3.0.3,<4",
+    "flask-cors>=5.0.0,<7",
+    "pyyaml>=6.0.1,<7",
+    "waitress>=3.0.1,<4",
+    "werkzeug>=3.0.6,<4",
 ]
 dynamic = ["version"]
 
@@ -89,9 +90,11 @@ select = [
     "RUF",   # ruff
     "TRY",   # tryceratops
 ]
+ignore = ["TRY003"] # Flask idiom: raise BadRequest("message")
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"src/mapio_webserver_back/app/commands.py" = ["S603"]
 "tests/*" = ["S101", "D"]
 
 [tool.ruff.lint.pydocstyle]
