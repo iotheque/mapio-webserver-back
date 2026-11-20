@@ -21,8 +21,19 @@ A Python project based on the Seedlings template
 
 ## Usage
 
-Describe here how to use this Python application/package: CLI options and flags,
-API when imported by another package, etc.
+Start the API on port 8456:
+
+```sh
+MAPIO_API_TOKEN=change-me mapio_webserver_back app
+```
+
+Environment variables:
+
+- `MAPIO_API_TOKEN`: bearer token required by every endpoint (the API is
+  unprotected when not set)
+- `MAPIO_CORS_ORIGINS`: comma-separated allowed origins, `*` by default
+- `MAPIO_COMPOSE_FILE`: path of the docker-compose file
+- `MAPIO_TOOLS_DIR`: folder holding the `docker_*.sh` helper scripts
 
 ## Installation
 
